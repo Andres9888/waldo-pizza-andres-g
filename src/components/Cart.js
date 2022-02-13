@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react"
-import { Drawer, Button, Space } from "antd"
-import { MinusCircleOutlined } from "@ant-design/icons"
-
-export const Cart = ({ size, onClose, visible, orders, setOrders }) => {
+import { Drawer, Button, Space, Card } from "antd"
+import { CloseCircleOutlined } from "@ant-design/icons"
+import { formatPrice } from "helper/formatPrice"
+export const Cart = ({ onClose, visible, orders, setOrders }) => {
   const [total, setTotal] = useState()
 
   useEffect(() => {
-    const totalPrice = orders.reduce((sum, currentOrder) => {
-      return sum + currentOrder.total
+    const totalPrice = orders.reduce((sum, { total }) => {
+      return sum + total
     }, 0)
     setTotal(totalPrice)
   }, [orders])
@@ -18,7 +18,7 @@ export const Cart = ({ size, onClose, visible, orders, setOrders }) => {
   }
   return (
     <Drawer
-      title={`${size} Drawer`}
+      title="Cart"
       placement="right"
       size="large"
       onClose={onClose}
@@ -32,17 +32,24 @@ export const Cart = ({ size, onClose, visible, orders, setOrders }) => {
         </Space>
       }
     >
-      {orders.map((order, index) => {
+      {orders.map(({ size, total: subTotal, options }, index) => {
         return (
-          <div key={index}>
-            <h3>{order.size}</h3>
-            <p>{order.options[0].topping.name}</p>
-            <h3>{order.total}</h3>
-            <MinusCircleOutlined onClick={() => removeOrder(index)} />
-          </div>
+          <Card key={index}>
+            <h4>{`${size} Pizza`}</h4>
+
+            {options.map(({ price, topping }) => (
+              <>
+                <h5>
+                  + {topping} : {price}
+                </h5>
+              </>
+            ))}
+            <h4>{formatPrice(subTotal)}</h4>
+            <CloseCircleOutlined onClick={() => removeOrder(index)} />
+          </Card>
         )
       })}
-      <h3>Total: {total}</h3>
+      <h3>Total: {formatPrice(total)}</h3>
     </Drawer>
   )
 }
