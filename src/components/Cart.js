@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react"
-import { Drawer, Button, Space, Card } from "antd"
-import { CloseCircleOutlined } from "@ant-design/icons"
+
+import { PizzaOrder } from "components"
+import { Drawer } from "./Drawer"
 import { formatPrice } from "helper/formatPrice"
-export const Cart = ({ onClose, visible, orders, setOrders }) => {
+
+export const Cart = ({ onClose, isVisible, orders, setOrders }) => {
   const [total, setTotal] = useState()
 
   useEffect(() => {
@@ -16,39 +18,28 @@ export const Cart = ({ onClose, visible, orders, setOrders }) => {
     const updatedOrders = orders.filter((_order, index) => index !== orderIndex)
     setOrders(updatedOrders)
   }
+  const PizzaOrderList = orders.map(
+    ({ size, total: subTotal, options }, index) => {
+      return (
+        <PizzaOrder
+          key={index}
+          removeOrder={removeOrder}
+          size={size}
+          subTotal={subTotal}
+          options={options}
+          index={index}
+        ></PizzaOrder>
+      )
+    }
+  )
   return (
     <Drawer
-      title="Cart"
-      placement="right"
-      size="large"
+      total={total}
+      PizzaOrderList={PizzaOrderList}
       onClose={onClose}
-      visible={visible}
-      extra={
-        <Space>
-          <Button onClick={onClose}>Cancel</Button>
-          <Button type="primary" onClick={onClose}>
-            OK
-          </Button>
-        </Space>
-      }
+      isVisible={isVisible}
     >
-      {orders.map(({ size, total: subTotal, options }, index) => {
-        return (
-          <Card key={index}>
-            <h4>{`${size} Pizza`}</h4>
-
-            {options.map(({ price, topping }) => (
-              <>
-                <h5>
-                  + {topping} : {price}
-                </h5>
-              </>
-            ))}
-            <h4>{formatPrice(subTotal)}</h4>
-            <CloseCircleOutlined onClick={() => removeOrder(index)} />
-          </Card>
-        )
-      })}
+      {PizzaOrderList}
       <h3>Total: {formatPrice(total)}</h3>
     </Drawer>
   )

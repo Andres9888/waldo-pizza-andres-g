@@ -1,60 +1,45 @@
 import "./App.css"
 import React, { useState } from "react"
 
-import { Card, Button, Col, Row } from "antd"
 import { useQuery } from "@apollo/client"
-import { CheckBoxPanel } from "./components/CheckBoxPanel"
-import { GET_PIZZA } from "./graphql/queries/queries"
-import { Cart } from "./components/Cart"
-import { PizzaSpinner } from "./components/PizzaSpinner"
+import { Button } from "antd"
 
-function App() {
+import { Cart, PizzaSpinner, PizzaMenu } from "components"
+
+import { GET_PIZZA } from "./graphql/queries/queries"
+
+const App = () => {
   const { loading, error, data } = useQuery(GET_PIZZA)
-  const [cartVisible, setCartVisible] = useState(false)
   const [orders, setOrders] = useState([])
+  const [cartIsVisible, setCartIsVisible] = useState(false)
 
   if (loading) return <PizzaSpinner />
 
   if (error) return <p>Error :(</p>
 
-  const pizzaSizes = data ? data.pizzaSizes : null
+  const pizzaSizes = data ? data.pizzaSizes : undefined
 
   const showCart = () => {
-    setCartVisible(true)
+    setCartIsVisible(true)
   }
-  const onCartClose = () => {
-    setCartVisible(false)
+  const closeCart = () => {
+    setCartIsVisible(false)
   }
   return (
     <div className="App">
       <Button type="primary" onClick={showCart}>
         Open Cart
       </Button>
-      <div className="pizza-container">
-        <Row gutter={16}>
-          {pizzaSizes.map(
-            ({ name: pizzaSize, maxToppings, toppings, basePrice }) => (
-              <Col span={8}>
-                <Card title={`${pizzaSize}  🍕`}>
-                  <CheckBoxPanel
-                    maxToppings={maxToppings}
-                    toppings={toppings}
-                    basePrice={basePrice}
-                    setOrders={setOrders}
-                    orders={orders}
-                    size={pizzaSize}
-                  />
-                </Card>
-              </Col>
-            )
-          )}
-        </Row>
-      </div>
+      <PizzaMenu
+        orders={orders}
+        setOrders={setOrders}
+        pizzaSizes={pizzaSizes}
+      />
       <Cart
         orders={orders}
         setOrders={setOrders}
-        onClose={onCartClose}
-        visible={cartVisible}
+        isVisible={cartIsVisible}
+        onClose={closeCart}
       />
     </div>
   )

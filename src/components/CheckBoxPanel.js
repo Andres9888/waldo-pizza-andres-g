@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react"
-import { ShoppingCartOutlined } from "@ant-design/icons"
-import { Button } from "antd"
 
 import { formatPrice } from "helper/formatPrice"
+import { AddOrder, CheckBoxList } from "components"
 
 export const CheckBoxPanel = ({
   toppings,
@@ -23,11 +22,11 @@ export const CheckBoxPanel = ({
     }, 0)
   }
   useEffect(() => {
-    const defaultCheckState = toppings.map((topping) => {
+    const defaultCheckState = toppings.map(({ topping, defaultSelected }) => {
       return {
-        isSelected: topping.defaultSelected,
-        topping: topping.topping.name,
-        price: topping.topping.price,
+        isSelected: defaultSelected,
+        topping: topping.name,
+        price: topping.price,
       }
     })
     const totalPrice = sumPrice(defaultCheckState)
@@ -37,10 +36,10 @@ export const CheckBoxPanel = ({
   }, [toppings, basePrice])
 
   const handleOnChange = (checkboxIndex) => {
-    const updatedCheckedState = checkedState.map((item, index) =>
+    const updatedCheckedState = checkedState.map((checkBox, index) =>
       index === checkboxIndex
-        ? { ...item, isSelected: !item.isSelected }
-        : { ...item }
+        ? { ...checkBox, isSelected: !checkBox.isSelected }
+        : { ...checkBox }
     )
 
     const totalChecked = updatedCheckedState.filter(
@@ -59,45 +58,25 @@ export const CheckBoxPanel = ({
     const options = checkedState.filter(
       (_topping, index) => checkedState[index].isSelected === true
     )
-    setOrders([...orders, { size: size, total: total, options: options }])
+    setOrders([...orders, { size, total, options }])
   }
   if (!checkedState) return null
 
   return (
-    <div className="App">
+    <div>
       <h3>Select Toppings</h3>
       <h4>Limit : {maxToppings}</h4>
       <ul className="toppings-list">
-        {toppings.map(({ topping: { name, price } }, index) => {
-          return (
-            <li key={index}>
-              <div className="toppings-list-item">
-                <div className="left-section">
-                  <input
-                    type="checkbox"
-                    id={`custom-checkbox-${index}`}
-                    name={name}
-                    value={name}
-                    checked={checkedState[index].isSelected}
-                    onChange={() => handleOnChange(index)}
-                  />
-                  <label htmlFor={`custom-checkbox-${index}`}>{name}</label>
-                </div>
-                <div className="right-section">{formatPrice(price)}</div>
-              </div>
-            </li>
-          )
-        })}
-        <li>
-          <div className="toppings-list-item">
-            <Button onClick={submitOrder}>
-              <ShoppingCartOutlined />
-              Add
-            </Button>
-            <div className="left-section">Total:</div>
-            <div className="right-section">{formatPrice(total)}</div>
-          </div>
-        </li>
+        <CheckBoxList
+          toppings={toppings}
+          checkedState={checkedState}
+          handleOnChange={handleOnChange}
+        />
+        <AddOrder
+          submitOrder={submitOrder}
+          formatPrice={formatPrice}
+          total={total}
+        />
       </ul>
     </div>
   )
