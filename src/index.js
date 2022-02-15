@@ -11,6 +11,9 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client"
 const client = new ApolloClient({
   uri: "https://core-graphql.dev.waldo.photos/pizza",
   cache: new InMemoryCache(),
+  fetchOptions: {
+    mode: "no-cors",
+  },
 })
 
 ReactDOM.render(
