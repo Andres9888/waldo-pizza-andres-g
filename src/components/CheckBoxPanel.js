@@ -11,7 +11,7 @@ export const CheckBoxPanel = ({
   orders,
   size,
 }) => {
-  const [checkedState, setCheckedState] = useState()
+  const [checkedBoxs, setCheckedBoxs] = useState()
   const [total, setTotal] = useState()
   const sumPrice = (checkboxsState) => {
     return checkboxsState.reduce((sum, { isSelected, price }) => {
@@ -22,22 +22,24 @@ export const CheckBoxPanel = ({
     }, 0)
   }
   useEffect(() => {
-    const defaultCheckState = toppings.map(({ topping, defaultSelected }) => {
-      return {
-        isSelected: defaultSelected,
-        topping: topping.name,
-        price: topping.price,
+    const initialCheckBoxState = toppings.map(
+      ({ topping, defaultSelected }) => {
+        return {
+          isSelected: defaultSelected,
+          topping: topping.name,
+          price: topping.price,
+        }
       }
-    })
-    const totalPrice = sumPrice(defaultCheckState)
+    )
+    const totalPrice = sumPrice(initialCheckBoxState)
 
     setTotal(totalPrice + basePrice)
-    setCheckedState(defaultCheckState)
+    setCheckedBoxs(initialCheckBoxState)
   }, [toppings, basePrice])
 
   const handleOnChange = (checkboxIndex) => {
-    const updatedCheckedState = checkedState.map((checkBox, index) =>
-      index === checkboxIndex
+    const updatedCheckedState = checkedBoxs.map((checkBox, mapIndex) =>
+      mapIndex === checkboxIndex
         ? { ...checkBox, isSelected: !checkBox.isSelected }
         : { ...checkBox }
     )
@@ -47,7 +49,7 @@ export const CheckBoxPanel = ({
     ).length
 
     if (totalChecked <= maxToppings || maxToppings === null) {
-      setCheckedState(updatedCheckedState)
+      setCheckedBoxs(updatedCheckedState)
 
       const totalPrice = sumPrice(updatedCheckedState)
 
@@ -55,12 +57,12 @@ export const CheckBoxPanel = ({
     }
   }
   const submitOrder = () => {
-    const options = checkedState.filter(
-      (_topping, index) => checkedState[index].isSelected === true
+    const options = checkedBoxs.filter(
+      (_topping, index) => checkedBoxs[index].isSelected === true
     )
     setOrders([...orders, { size, total, options }])
   }
-  if (!checkedState) return null
+  if (!checkedBoxs) return null
 
   return (
     <div>
@@ -69,7 +71,7 @@ export const CheckBoxPanel = ({
       <ul className="toppings-list">
         <CheckBoxList
           toppings={toppings}
-          checkedState={checkedState}
+          checkedState={checkedBoxs}
           handleOnChange={handleOnChange}
         />
         <AddOrder

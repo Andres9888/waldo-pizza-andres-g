@@ -5,10 +5,26 @@ export const PizzaSpinner = () => {
   return (
     <div className="spinner-container">
       <div className="spinner">
-        <img className="pizza-part pizza-part-1" src={pizzaImgUrl} />
-        <img className="pizza-part pizza-part-2" src={pizzaImgUrl} />
-        <img className="pizza-part pizza-part-3" src={pizzaImgUrl} />
-        <img className="pizza-part pizza-part-4" src={pizzaImgUrl} />
+        <img
+          alt="pizza-slice"
+          className="pizza-part pizza-part-1"
+          src={pizzaImgUrl}
+        />
+        <img
+          alt="pizza-slice"
+          className="pizza-part pizza-part-2"
+          src={pizzaImgUrl}
+        />
+        <img
+          alt="pizza-slice"
+          className="pizza-part pizza-part-3"
+          src={pizzaImgUrl}
+        />
+        <img
+          alt="pizza-slice"
+          className="pizza-part pizza-part-4"
+          src={pizzaImgUrl}
+        />
       </div>
     </div>
   )
